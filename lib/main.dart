@@ -34,17 +34,22 @@ bool clicked=false;
 List title = ['Buy food for da kitty','Find a Red Sea dive trip','Book flights to Egypt','Decide on accommodation']; 
 List subtitle = ['with the chickeny bits!','Echo vs My Dream','with the chickeny bits!','Echo vs My Dream']; 
 List<UserModel> userModel=[];
-Future<UserModel> fetchAlbum() async {
+Future fetchAlbum() async {
   final response = await http
       .get(Uri.parse('https://jsonplaceholder.typicode.com/users'));
 
   if (response.statusCode == 200) {
     var r=await jsonDecode(response.body);
-    userModel=await r.map<UserModel>((json)=>UserModel.fromJson(json)).toList();
+        userModel=await r.map<UserModel>((json)=>UserModel.fromJson(json)).toList();
+
+    setState(() {
+      this.userModel=userModel;
+      
+    });
     print('priyesh$userModel');
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return UserModel.fromJson(jsonDecode(response.body));
+    return userModel;
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
