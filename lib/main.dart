@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_13/user_model.dart';
-import 'package:http/http.dart' as http;
 
-void main() => runApp(MyApp());
+import 'bottom.dart';
 
+void main() => runApp(BotApp());
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -18,47 +16,22 @@ Widget build(BuildContext context) {
 		primarySwatch: Colors.green
 	),
 	debugShowCheckedModeBanner: false,
-	home: new New()
+	home: new ListViewBuilder()
 	);
 }
 }
-class New extends StatefulWidget {
+class ListViewBuilder extends StatefulWidget {
   @override
-  State<New> createState() => _NewState();
+  State<ListViewBuilder> createState() => _ListViewBuilderState();
 }
 
-class _NewState extends State<New> {
-    final _texttitle = TextEditingController();
+class _ListViewBuilderState extends State<ListViewBuilder> {
+   final _texttitle = TextEditingController();
     final _textsubtitle = TextEditingController();
 bool clicked=false;
 List title = ['Buy food for da kitty','Find a Red Sea dive trip','Book flights to Egypt','Decide on accommodation']; 
 List subtitle = ['with the chickeny bits!','Echo vs My Dream','with the chickeny bits!','Echo vs My Dream']; 
-List<UserModel> userModel=[];
-Future fetchAlbum() async {
-  final response = await http
-      .get(Uri.parse('https://jsonplaceholder.typicode.com/users'));
-
-  if (response.statusCode == 200) {
-    var r=await jsonDecode(response.body);
-        userModel=await r.map<UserModel>((json)=>UserModel.fromJson(json)).toList();
-
-    setState(() {
-      this.userModel=userModel;
-      
-    });
-    print('priyesh$userModel');
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    return userModel;
-  } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
-    throw Exception('Failed to load album');
-  }
-}
-
-
-
+  
 
   static get numbers => null;
 
@@ -66,15 +39,8 @@ Future fetchAlbum() async {
 
   get continueButton => null;
 
-  int? get index => null;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-     title.add(_texttitle.text);
-            subtitle.add(_textsubtitle.text);
-    fetchAlbum();
-  }
+  Object? get result => null;
+  
 
 @override
 Widget build(BuildContext context) {
@@ -83,14 +49,13 @@ Widget build(BuildContext context) {
 		title:Text("Vanilla Example"),
     backgroundColor: Colors.black45,
 	),
-	body: Container(height: MediaQuery.of(context).size.height,
-	  child: ListView.builder(
-	  	itemCount: userModel.length,
-	  	itemBuilder:
+	body: ListView.builder(
+		itemCount: title.length,
+		itemBuilder:
     
      (BuildContext context,int index){
-	  	var product;
-	  	return Dismissible(key: Key('item ${userModel[index]}'),
+		var product;
+		return Dismissible(key: Key('item ${title[index]}'),
      onDismissed: (DismissDirection direction) {
           if (direction == DismissDirection.startToEnd) {
             print("Add to favorite");
@@ -99,7 +64,8 @@ Widget build(BuildContext context) {
           }
  
           setState(() {
-            userModel.removeAt(index);
+            title.removeAt(index);
+            subtitle.removeAt(index);
             
           });
         },
@@ -116,15 +82,14 @@ Widget build(BuildContext context) {
                       clicked=true;
                     });
               }},
-            trailing: Text(userModel[index].id.toString(),
+            trailing: Text("GFG",
                   style: TextStyle(
                     color: Colors.green,fontSize: 15),),
-            title:Text(userModel[index].name.toString()),subtitle: Text(userModel[index].username.toString()),
+            title:Text(title[index]),subtitle: Text(subtitle[index]),
             ),
         );  
-	  	}
-	  	),
-	),  floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+		}
+		),  floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
         // isExtended: true,
         child: Padding(
@@ -133,30 +98,36 @@ Widget build(BuildContext context) {
         ),
         backgroundColor: Colors.green,
         onPressed: () { 
-                       showDialog(
+showDialog(
                 context: context,
                 builder: (ctx) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 100,horizontal: 20),
-                  child: AlertDialog(
-                    content:Column(
-  children:  <Widget>[
-    TextField(controller: _texttitle,
-  decoration: InputDecoration(
-    border: OutlineInputBorder(),
-    hintText: 'Enter a Name',
-  ),
-),
-    TextField(controller: _textsubtitle,
-  decoration: InputDecoration(
-    border: OutlineInputBorder(),
-    hintText: 'Enter a  Number',
-  ),cursorHeight: 40,
-),]),
+                  padding: const EdgeInsets.symmetric(vertical: 100,horizontal: 0),
+                  child: AlertDialog( 
+                    content:Container(
+                      height: 300,
+                      child: SingleChildScrollView(
+                        child: Column(
+                        children:  <Widget>[
+                          TextField(controller: _texttitle,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter a Name',
+                        ),
+                      ),
+                          TextField(controller: _textsubtitle,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter a  Number',
+                        ),cursorHeight: 50,
+                      ),]),
+                      ),
+                    ),
     
                     actions: <Widget>[
                      ElevatedButton(
   child: Text('Button'),
-  onPressed: () {
+  onPressed: () async{
+    Navigator.of(context, rootNavigator: true).pop(result);
  setState(() {
             title.add(_texttitle.text);
             subtitle.add(_textsubtitle.text);
@@ -164,29 +135,22 @@ Widget build(BuildContext context) {
           });
   },
 ),
-                    ],
-                  ),
+                  ],
                 ),
-              );
+ ) );
+ 
+     
+          
+   
          
         },
-      ), bottomNavigationBar: BottomNavigationBar(backgroundColor: Colors.black54,
-    items: const <BottomNavigationBarItem>[
-      BottomNavigationBarItem(
-        icon: Icon(Icons.list),
-        label: 'todos',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.chair),
-        label: 'stats',
-      ),]
-  )); 	
+      ),); 	
 }
 
-  void showLoading() {}
-
-  void hideLoading() {}
-
-  getAllUserModelFromApi() {}
-
 }
+
+class _textsubtitle {
+}
+
+class _texttitle {
+}    
